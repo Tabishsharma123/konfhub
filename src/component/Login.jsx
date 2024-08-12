@@ -58,7 +58,7 @@ const Login = () => {
       try {
         await signInWithEmailAndPassword(email, password);
         if (!error) {
-          navigate("/");
+          window.location.href = "https://dev.konfhub.com/";
         }
       } catch (error) {
         console.error("Error signing in:", error);

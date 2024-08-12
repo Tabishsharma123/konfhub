@@ -9,6 +9,7 @@ import {
   FacebookAuthProvider,
   OAuthProvider,
   sendPasswordResetEmail,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { useNavigate } from "react-router-dom";
@@ -32,8 +33,6 @@ const Signup = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [signInWithEmailAndPassword, error] =
-    useSignInWithEmailAndPassword(auth);
   const [signInWithGoogle] = useSignInWithGoogle(auth);
   const navigate = useNavigate();
 
@@ -51,7 +50,6 @@ const Signup = () => {
       setPasswordError("Please enter your password");
       isValid = false;
     }
-
     if (password !== confirmPassword) {
       setConfirmPasswordError("Passwords do not match");
       isValid = false;
@@ -60,16 +58,15 @@ const Signup = () => {
     return isValid;
   };
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        await signInWithEmailAndPassword(email, password);
-        if (!error) {
-          navigate("/");
-        }
+        await createUserWithEmailAndPassword(auth, email, password);
+        // Redirect to login page after successful signup
+        navigate("/login");
       } catch (error) {
-        console.error("Error signing in:", error);
+        console.error("Error signing up:", error);
       }
     }
   };
@@ -78,7 +75,7 @@ const Signup = () => {
     try {
       const result = await signInWithGoogle();
       if (result) {
-        navigate("/");
+        window.location.href = "https://dev.konfhub.com/";
       }
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -90,7 +87,7 @@ const Signup = () => {
       const provider = new FacebookAuthProvider();
       const result = await signInWithPopup(auth, provider);
       if (result) {
-        navigate("/");
+        window.location.href = "https://dev.konfhub.com/";
       }
     } catch (error) {
       console.error("Error signing in with Facebook:", error);
@@ -102,7 +99,7 @@ const Signup = () => {
       const provider = new OAuthProvider("amazon.com");
       const result = await signInWithPopup(auth, provider);
       if (result) {
-        navigate("/");
+        window.location.href = "https://dev.konfhub.com/";
       }
     } catch (error) {
       console.error("Error signing in with Amazon:", error);
@@ -147,16 +144,16 @@ const Signup = () => {
           <img
             src="https://dev-accounts.konfhub.com/static/media/Top_middle.a4f4c572.svg"
             alt="Top Middle Background"
-            className="absolute top-1   rounded-lg opacity-30"
+            className="absolute top-1 rounded-lg opacity-30"
           />
           <div
             className="bg-white rounded-lg p-7 flex flex-col"
             style={{ width: "85%", minHeight: "505px", maxHeight: "auto" }}
           >
             <h2 className="text-3xl font-bold text-[#572148] mb-6 text-center font-Caveat Brush'">
-              Sign In
+              Sign Up
             </h2>
-            <form onSubmit={handleLogin} className="flex-1 flex flex-col">
+            <form onSubmit={handleSignup} className="flex-1 flex flex-col">
               <div className="mb-4">
                 <label className="text-[#572148]">Email</label>
                 <div className="flex items-center border-b border-gray-300">
@@ -218,7 +215,7 @@ const Signup = () => {
                 type="submit"
                 className="w-full bg-[#572148] text-white py-2 rounded-md font-semibold hover:bg-opacity-90 transition duration-200"
               >
-                Sign In
+                Sign Up
               </button>
             </form>
             <div className="my-4 text-center">
@@ -267,7 +264,7 @@ const Signup = () => {
                 href="/login"
                 className="text-sm text-[#FF6B6B] font-semibold hover:underline"
               >
-                Sign Up
+                Signin
               </a>
             </div>
           </div>
