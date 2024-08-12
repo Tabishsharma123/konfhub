@@ -1,17 +1,19 @@
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
-import HostInfo from "./component/HostInfo";
+import TicketRegistration from "./component/TicketRegistration";
 import Header from "./component/Header";
 import Herosub from "./component/Herosub";
-import Navigation from "./component/Navigation";
+import HostInfo from "./component/HostInfo";
 import Ticket from "./component/Ticket";
+import Navigation from "./component/Navigation";
 import Speakers from "./component/Speakers";
 import Workshops from "./component/Workshops";
 import Eventsponsors from "./component/Eventsponsors";
-import "./App.css";
 import Hero from "./component/Hero.jsx";
 import Login from "./component/Login.jsx";
 import Signup from "./component/Signup.jsx";
+import "./App.css";
 
 function App() {
   const [eventData, setEventData] = useState(null);
@@ -48,11 +50,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Login and Signup routes without header */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
-        {/* Main event route with header */}
+        <Route
+          path="/registrationticket"
+          element={<TicketRegistration tickets={eventData.tickets} />}
+        />
         <Route
           path="/"
           element={
@@ -74,7 +77,7 @@ function App() {
                       </div>
                     </div>
                   </div>
-                  <Ticket />
+                  <Ticket tickets={eventData.tickets} />
                   <Speakers eventData={eventData} />
                   <Workshops eventData={eventData} />
                   <Eventsponsors eventData={eventData} />
