@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
+import { FaArrowLeft, FaMapMarkerAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-// eslint-disable-next-line no-unused-vars
-import { FaShoppingCart, FaMapMarkerAlt } from "react-icons/fa";
+import { BsCart } from "react-icons/bs";
 
 const TicketCard = ({
   type,
@@ -11,14 +13,10 @@ const TicketCard = ({
   additionalDetails,
   availableUntil,
   price,
-  handleAddTicket,
-  handleRemoveTicket,
-  selectedTickets,
+  onAddTicket,
+  quantity,
+  onRemoveTicket,
 }) => {
-  const isSelected = selectedTickets.some(
-    (t) => t.type === type && t.price === price
-  );
-
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-6">
       <h3 className="text-xl font-bold mb-2">{type}</h3>
@@ -33,24 +31,25 @@ const TicketCard = ({
       </div>
       <div className="flex justify-between items-center">
         <span className="text-2xl font-bold">{price}</span>
-        {isSelected ? (
+        {quantity > 0 ? (
           <div className="flex items-center space-x-2">
             <button
-              onClick={() => handleRemoveTicket({ type, price })}
-              className="bg-white text-black border border-black py-1 px-2 rounded-full h-11 w-11 flex items-center justify-center hover:bg-black hover:text-white transition duration-300"
+              onClick={() => onRemoveTicket(type)}
+              className="bg-white text-black border border-black py-1 px-2 rounded-full h-8 w-8 flex items-center justify-center hover:bg-black hover:text-white transition duration-300"
             >
               -
             </button>
+            <span>{quantity}</span>
             <button
-              onClick={() => handleAddTicket({ type, price })}
-              className="bg-white text-black border border-black py-1 px-2 rounded-full h-11 w-11 flex items-center justify-center hover:bg-black hover:text-white transition duration-300"
+              onClick={() => onAddTicket(type)}
+              className="bg-white text-black border border-black py-1 px-2 rounded-full h-8 w-8 flex items-center justify-center hover:bg-black hover:text-white transition duration-300"
             >
               +
             </button>
           </div>
         ) : (
           <button
-            onClick={() => handleAddTicket({ type, price })}
+            onClick={() => onAddTicket(type)}
             className="bg-black text-white py-2 px-6 rounded-md hover:bg-gray-800 transition duration-300"
           >
             Add
@@ -61,51 +60,139 @@ const TicketCard = ({
   );
 };
 
-const TicketRegistration = ({ tickets = [] }) => {
+const TicketRegistration = () => {
   const navigate = useNavigate();
-  const [selectedTickets, setSelectedTickets] = useState([]);
+  const [selectedTickets, setSelectedTickets] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [openSections, setOpenSections] = useState({});
+  const [openSections, setOpenSections] = useState({
+    uncategorized: true,
+    category1: false,
+    category2: true,
+  });
 
-  const handleAddTicket = (ticket) => {
-    setSelectedTickets((prevTickets) => {
-      const existingTicket = prevTickets.find(
-        (t) => t.type === ticket.type && t.price === ticket.price
-      );
-      if (existingTicket) {
-        return prevTickets.map((t) =>
-          t.type === ticket.type && t.price === ticket.price
-            ? { ...t, quantity: t.quantity + 1 }
-            : t
-        );
-      } else {
-        return [...prevTickets, { ...ticket, quantity: 1 }];
+  const allTickets = {
+    uncategorized: [
+      {
+        type: "Free Ticket",
+        description:
+          "This is a ticket description. This is a free ticket. This ticket is uncategorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "FREE",
+      },
+      {
+        type: "Paid Ticket",
+        description:
+          "This is a ticket description. This is a paid ticket. This ticket is uncategorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "₹1,000",
+      },
+      {
+        type: "Donation Ticket",
+        description:
+          "This is a ticket description. This is a donation ticket. This ticket is uncategorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "Min ₹10 - Max ₹1,000",
+      },
+      {
+        type: "Ticket With Coupon",
+        description:
+          "This is a ticket description. This is a paid ticket. This ticket is uncategorised. This ticket also has a coupon. Buy minimum - 1 and maximum - 1000000 and avail 10% off.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "₹1,000",
+      },
+    ],
+    category1: [
+      {
+        type: "Free Ticket in Category1",
+        description:
+          "This is a ticket description. This is a free ticket. This ticket is categorized.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "FREE",
+      },
+      {
+        type: "Paid Ticket in Category1",
+        description:
+          "This is a ticket description. This is a paid ticket. This ticket is categorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "₹1,000",
+      },
+    ],
+    category2: [
+      {
+        type: "Free Ticket in Category2",
+        description:
+          "This is a ticket description. This is a free ticket. This ticket is categorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "FREE",
+      },
+      {
+        type: "Paid Ticket in Category2",
+        description:
+          "This is a ticket description. This is a paid ticket. This ticket is categorised.",
+        venue:
+          "KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India",
+        additionalDetails: "This is additional venue details.",
+        availableUntil: "31st Aug 2034, 06:00 PM IST",
+        price: "₹1,000",
+      },
+    ],
+  };
+
+  const handleAddTicket = (ticketType) => {
+    setSelectedTickets((prev) => ({
+      ...prev,
+      [ticketType]: (prev[ticketType] || 0) + 1,
+    }));
+  };
+
+  const handleRemoveTicket = (ticketType) => {
+    setSelectedTickets((prev) => {
+      const newQuantity = (prev[ticketType] || 0) - 1;
+      if (newQuantity <= 0) {
+        const { [ticketType]: _, ...rest } = prev;
+        return rest;
       }
+      return { ...prev, [ticketType]: newQuantity };
     });
   };
 
-  const handleRemoveTicket = (ticket) => {
-    setSelectedTickets((prevTickets) =>
-      prevTickets
-        .map((t) =>
-          t.type === ticket.type && t.price === ticket.price
-            ? { ...t, quantity: t.quantity - 1 }
-            : t
-        )
-        .filter((t) => t.quantity > 0)
-    );
-  };
-
   const proceedToCheckout = () => {
-    if (selectedTickets.length > 0) {
+    if (Object.keys(selectedTickets).length > 0) {
       navigate("/checkout", { state: { selectedTickets } });
     } else {
       alert("Please select at least one ticket to proceed.");
     }
   };
 
-  const filteredTickets = tickets.filter((ticket) =>
-    ticket.type.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTickets = Object.entries(allTickets).reduce(
+    (acc, [category, tickets]) => {
+      acc[category] = tickets.filter((ticket) =>
+        ticket.type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      return acc;
+    },
+    {}
   );
 
   const toggleSection = (sectionKey) => {
@@ -115,15 +202,51 @@ const TicketRegistration = ({ tickets = [] }) => {
     }));
   };
 
+  const renderTickets = (tickets) => {
+    return tickets.map((ticket, index) => (
+      <TicketCard
+        key={index}
+        {...ticket}
+        onAddTicket={handleAddTicket}
+        onRemoveTicket={handleRemoveTicket}
+        quantity={selectedTickets[ticket.type] || 0}
+      />
+    ));
+  };
+
+  const totalAmount = Object.entries(selectedTickets).reduce(
+    (total, [type, quantity]) => {
+      const ticket = Object.values(allTickets)
+        .flat()
+        .find((t) => t.type === type);
+      if (ticket && ticket.price !== "FREE") {
+        return total + parseInt(ticket.price.replace(/[^0-9]/g, "")) * quantity;
+      }
+      return total;
+    },
+    0
+  );
+
   return (
     <div className="flex">
-      {/* Middle - Ticket Section */}
+      {/* Ticket Section */}
       <div className="flex-1 p-8">
-        <h1 className="text-2xl font-bold mb-4">Ticket Registration</h1>
+        <button
+          onClick={() => navigate("/")}
+          className="text-lg bg-gray-100 text-gray-600 rounded-full p-1.5 hover:bg-gray-200 transition duration-200 mb-4"
+        >
+          <FaArrowLeft size={24} />
+        </button>
+        <h1 className="text-2xl font-bold mb-4">
+          KonfHub Frontend Evaluation Task
+        </h1>
+        <p className="text-gray-600 mb-4">
+          31st Jul, 2034 at 6:00 AM IST to 31st Aug, 2034 at 6:00 PM IST
+        </p>
         <div className="mb-6">
           <input
             type="text"
-            placeholder="Search tickets..."
+            placeholder="Search for tickets..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 border rounded-md"
@@ -132,21 +255,9 @@ const TicketRegistration = ({ tickets = [] }) => {
         <div className="bg-gray-100 py-8" id="tickets">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-6">TICKETS</h2>
-            {filteredTickets.length > 0 &&
-              filteredTickets.map((ticket, index) => (
-                <TicketCard
-                  key={index}
-                  type={ticket.type}
-                  description={ticket.description}
-                  venue={ticket.venue}
-                  additionalDetails={ticket.additionalDetails}
-                  availableUntil={ticket.availableUntil}
-                  price={ticket.price}
-                  handleAddTicket={handleAddTicket}
-                  handleRemoveTicket={handleRemoveTicket}
-                  selectedTickets={selectedTickets}
-                />
-              ))}
+
+            {/* Uncategorized Tickets */}
+            {renderTickets(filteredTickets.uncategorized)}
 
             {/* Category 1 */}
             <div className="bg-white rounded-lg shadow-md p-4 mb-4 border border-gray-200">
@@ -166,29 +277,7 @@ const TicketRegistration = ({ tickets = [] }) => {
                     This is category description. This category is collapsed by
                     default.
                   </p>
-                  {/* Example Ticket Cards for Category 1 */}
-                  <TicketCard
-                    type="Free Ticket in Category1"
-                    description="This is a ticket description. This is a free ticket. This ticket is categorized."
-                    venue="KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India"
-                    additionalDetails="This is additional venue details."
-                    availableUntil="31st Aug 2034, 06:00 PM IST"
-                    price="FREE"
-                    handleAddTicket={handleAddTicket}
-                    handleRemoveTicket={handleRemoveTicket}
-                    selectedTickets={selectedTickets}
-                  />
-                  <TicketCard
-                    type="Paid Ticket in Category1"
-                    description="This is a ticket description. This is a paid ticket. This ticket is categorised."
-                    venue="KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India"
-                    additionalDetails="This is additional venue details."
-                    availableUntil="31st Aug 2034, 06:00 PM IST"
-                    price="₹1,000"
-                    handleAddTicket={handleAddTicket}
-                    handleRemoveTicket={handleRemoveTicket}
-                    selectedTickets={selectedTickets}
-                  />
+                  {renderTickets(filteredTickets.category1)}
                 </div>
               )}
             </div>
@@ -213,36 +302,9 @@ const TicketRegistration = ({ tickets = [] }) => {
                   <p className="text-gray-600 text-sm mb-2">
                     This is category description. This category is expanded by
                     default. This is a little longer description. Adding more
-                    content to make the description look longer. Adding more
-                    content to make the description look longer. Adding more
-                    content to make the description look longer. Adding more
-                    content to make the description look longer. Adding more
-                    content to make the description look longer. Adding more
                     content to make the description look longer.
                   </p>
-                  {/* Example Ticket Cards for Category 2 */}
-                  <TicketCard
-                    type="Free Ticket in Category2"
-                    description="This is a ticket description. This is a free ticket. This ticket is categorised."
-                    venue="KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India"
-                    additionalDetails="This is additional venue details."
-                    availableUntil="31st Aug 2034, 06:00 PM IST"
-                    price="FREE"
-                    handleAddTicket={handleAddTicket}
-                    handleRemoveTicket={handleRemoveTicket}
-                    selectedTickets={selectedTickets}
-                  />
-                  <TicketCard
-                    type="Paid Ticket in Category2"
-                    description="This is a ticket description. This is a paid ticket. This ticket is categorised."
-                    venue="KonfHub Technologies, Nagavarapalya, C V Raman Nagar, Bengaluru, Karnataka, India"
-                    additionalDetails="This is additional venue details."
-                    availableUntil="31st Aug 2034, 06:00 PM IST"
-                    price="₹1,000"
-                    handleAddTicket={handleAddTicket}
-                    handleRemoveTicket={handleRemoveTicket}
-                    selectedTickets={selectedTickets}
-                  />
+                  {renderTickets(filteredTickets.category2)}
                 </div>
               )}
             </div>
@@ -250,37 +312,57 @@ const TicketRegistration = ({ tickets = [] }) => {
         </div>
       </div>
 
-      {/* Right Side - Cart */}
-      <div className="w-80 p-8 bg-gray-200 h-screen sticky top-0">
-        <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
-        {selectedTickets.length === 0 ? (
-          <p className="text-gray-600">Your cart is empty.</p>
-        ) : (
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            {selectedTickets.map((ticket, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center mb-4"
-              >
-                <span>
-                  {ticket.type} - {ticket.price} (x{ticket.quantity})
-                </span>
-                <button
-                  onClick={() => handleRemoveTicket(ticket)}
-                  className="bg-gray-300 text-black py-1 px-2 rounded-md hover:bg-gray-400 transition duration-300"
-                >
-                  -
-                </button>
+      {/* Ticket Summary */}
+      <div className="w-80 p-8 bg-gray-100 h-screen sticky top-0">
+        <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Ticket Summary</h2>
+          {Object.keys(selectedTickets).length === 0 ? (
+            <div className="text-center">
+              <div className="text-gray-400 mb-4 ">
+                <BsCart size={80} />
               </div>
-            ))}
-            <button
-              onClick={proceedToCheckout}
-              className="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700"
-            >
-              Proceed to Checkout
-            </button>
-          </div>
-        )}
+              <p className="text-gray-600">You haven't selected any ticket.</p>
+              <p className="text-gray-600">
+                Select a ticket to see the ticket summary.
+              </p>
+            </div>
+          ) : (
+            <>
+              {Object.entries(selectedTickets).map(([type, quantity]) => (
+                <div
+                  key={type}
+                  className="flex justify-between items-center mb-2"
+                >
+                  <span>{type}</span>
+                  <span>x {quantity}</span>
+                  <span>
+                    {
+                      allTickets.uncategorized.find((t) => t.type === type)
+                        ?.price
+                    }
+                  </span>
+                </div>
+              ))}
+              <div className="border-t border-gray-200 mt-4 pt-4">
+                <div className="flex justify-between items-center font-semibold">
+                  <span>Total</span>
+                  <span>₹{totalAmount}</span>
+                </div>
+              </div>
+            </>
+          )}
+          <button
+            onClick={proceedToCheckout}
+            className={`w-full mt-4 py-2 px-4 rounded-md ${
+              Object.keys(selectedTickets).length > 0
+                ? "bg-black text-white hover:bg-gray-800"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            } transition duration-300`}
+            disabled={Object.keys(selectedTickets).length === 0}
+          >
+            Proceed
+          </button>
+        </div>
       </div>
     </div>
   );
