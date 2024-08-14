@@ -228,7 +228,7 @@ const TicketRegistration = () => {
   );
 
   return (
-    <div className="flex">
+    <div className="flex border">
       {/* Ticket Section */}
       <div className="flex-1 p-8">
         <button

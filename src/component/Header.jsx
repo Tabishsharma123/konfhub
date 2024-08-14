@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { MdOutlinePerson } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
